@@ -1,0 +1,74 @@
+{
+  "Jest Matcher - toBe": {
+    "prefix": "jestToBe",
+    "body": [
+      "test('$1', () => {",
+      "  expect($2).toBe($3);",
+      "});"
+    ],
+    "description": "Test using Jest's toBe matcher for strict equality."
+  },
+  "Jest Matcher - toEqual": {
+    "prefix": "jestToEqual",
+    "body": [
+      "test('$1', () => {",
+      "  expect($2).toEqual($3);",
+      "});"
+    ],
+    "description": "Test using Jest's toEqual matcher for deep equality."
+  },
+  "Jest Matcher - toBeTruthy": {
+    "prefix": "jestToBeTruthy",
+    "body": [
+      "test('$1', () => {",
+      "  expect($2).toBeTruthy();",
+      "});"
+    ],
+    "description": "Test using Jest's toBeTruthy matcher to check if a value is truthy."
+  },
+  "Jest Matcher - toBeFalsy": {
+    "prefix": "jestToBeFalsy",
+    "body": [
+      "test('$1', () => {",
+      "  expect($2).toBeFalsy();",
+      "});"
+    ],
+    "description": "Test using Jest's toBeFalsy matcher to check if a value is falsy."
+  },
+  "Jest Matcher - toThrow": {
+    "prefix": "jestToThrow",
+    "body": [
+      "test('$1', () => {",
+      "  expect(() => $2).toThrow($3);",
+      "});"
+    ],
+    "description": "Test using Jest's toThrow matcher to check if a function throws an error."
+  },
+  "Jest Matcher - toBeGreaterThan": {
+    "prefix": "jestToBeGreaterThan",
+    "body": [
+      "test('$1', () => {",
+      "  expect($2).toBeGreaterThan($3);",
+      "});"
+    ],
+    "description": "Test using Jest's toBeGreaterThan matcher to check if a value is greater than another."
+  },
+  "Jest Matcher - toHaveLength": {
+    "prefix": "jestToHaveLength",
+    "body": [
+      "test('$1', () => {",
+      "  expect($2).toHaveLength($3);",
+      "});"
+    ],
+    "description": "Test using Jest's toHaveLength matcher to check the length of an array or string."
+  },
+  "Jest Matcher - toContain": {
+    "prefix": "jestToContain",
+    "body": [
+      "test('$1', () => {",
+      "  expect($2).toContain($3);",
+      "});"
+    ],
+    "description": "Test using Jest's toContain matcher to check if an array or string contains a specific value."
+  }
+}
