@@ -142,28 +142,34 @@ export { PostRequest };
 `,
   'hooks/useRequest.tsx': `
 
-import { useCallback, useState } from 'react';
-import { Request } from "./RequestClass";
+import { useState, useCallback, useMemo } from 'react';
+import { Request } from '../models/RequestClass';
 
-function useRequest(request) {
+function useRequest<TReq extends Request<any>, TResult = any>(
+  createRequest: (...args: any[]) => TReq
+) {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<any>(null);
 
-  const send = useCallback(async () => {
-    setLoading(true);
-    try {
-      const result = await request.send();
-      return result;
-    } catch (err) {
-      setError({
-        message: err.response?.data?.message || err.message,
-        code: err.response?.status || 500
-      });
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [request]);
+  const send = useCallback(
+    async (...args: any[]): Promise<TResult | null> => {
+      setLoading(true);
+      try {
+        const request = createRequest(...args); 
+        const result = await request.send();
+        return result;
+      } catch (err:any) {
+        setError({
+          message: err.response?.data?.message || err.message,
+          code: err.response?.status || 500,
+        });
+        return null;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [createRequest]
+  );
 
   return { send, loading, error };
 }
@@ -172,6 +178,7 @@ export { useRequest };
 `,
   'services/api.ts': `
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import Config from 'react-native-config';
 
@@ -206,11 +213,35 @@ const apiConfig: ApiConfig = {
 if (USE_COOKIES === 'true') {
   apiConfig.withCredentials = true;
 } else if (API_TOKEN) {
-  apiConfig.headers.Authorization = \`Bearer \${API_TOKEN}\`;
+  apiConfig.headers.Authorization = Bearer ${API_TOKEN};
 }
 
 const api = axios.create(apiConfig);
 
+api.interceptors.request.use(
+  async (config) => {
+    try {
+      const storedUrl = await AsyncStorage.getItem('url');
+      const storedToken = await AsyncStorage.getItem('api_token');
+
+      if (storedUrl) {
+        config.baseURL = storedUrl;
+      }
+
+      if (storedToken) {
+        config.headers.Authorization = Token ${storedToken};
+      }
+
+      return config;
+    } catch (error) {
+      if (isDev) {
+        console.error('Interceptor error:', error);
+      }
+      return config; 
+    }
+  },
+  (error) => Promise.reject(error)
+);
 
 api.interceptors.request.use(
   (config) => {
