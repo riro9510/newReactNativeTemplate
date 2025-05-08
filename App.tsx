@@ -1,7 +1,7 @@
-// @ts-nocheck
-  const React = require('react');
-const { View, Text, StyleSheet } = require('react-native');
-const { Navigation } = require('./navigation');
+
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Navigation } from './navigation';
 
 function App() {
   return (
@@ -34,5 +34,4 @@ const styles = StyleSheet.create({
     textAlign: 'center', 
   },
 });
-module.exports = App;  
- 
+export default App;  

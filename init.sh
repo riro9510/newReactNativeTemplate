@@ -13,7 +13,7 @@ chmod +x scripts/*.js 2>/dev/null
 chmod +x .husky/* 2>/dev/null
 
 echo "📂 Creating base structure..."
-node scripts/createStructure.js
+node scripts/createStructure.mjs
 
 ENV_FILE=".env"
 if [ ! -f "$ENV_FILE" ]; then
