@@ -213,7 +213,7 @@ const apiConfig: ApiConfig = {
 if (USE_COOKIES === 'true') {
   apiConfig.withCredentials = true;
 } else if (API_TOKEN) {
-  apiConfig.headers.Authorization = Bearer ${API_TOKEN};
+  apiConfig.headers.Authorization = Bearer \${API_TOKEN}\;
 }
 
 const api = axios.create(apiConfig);
@@ -229,7 +229,7 @@ api.interceptors.request.use(
       }
 
       if (storedToken) {
-        config.headers.Authorization = Token ${storedToken};
+        config.headers.Authorization = Token \${storedToken}\;
       }
 
       return config;
