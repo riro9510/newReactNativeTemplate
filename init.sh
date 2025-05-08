@@ -31,8 +31,6 @@ fi
 echo "📦 Installing dependencies..."
 npm install --no-audit
 
-echo "🧹 Running lint and format..."
-npm run lint:fix && npm run format
 
 echo "✅ React Native project successfully initialized 🎉"
 echo "📦 All dependencies installed"
