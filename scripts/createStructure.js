@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { spawn } = require('child_process');
+import fs from 'fs';
+import path from 'path';
+import { spawn } from 'child_process';
 
 const folderStructure = [
   'assets',
@@ -17,27 +17,50 @@ const folderStructure = [
 
 const fileContents = {
   'App.tsx': `// @ts-nocheck
-  const React = require('react');
-const { View, Text } = require('react-native');
-const { Navigation } = require('./navigation');
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { Navigation } from './navigation';
 
 function App() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Hello from your React Native Template 👋</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Riro's Customized Template</Text>
+      <Text style={styles.subtitle}>Hello from your React Native Template 👋</Text>
       <Navigation />
     </View>
   );
 }
-module.exports = App;  
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    padding:30
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 20,
+    textAlign: 'center', 
+  },
+  subtitle: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 40,
+    textAlign: 'center', 
+  },
+});
+export default App;  
 `,
 
   'navigation/index.tsx': `
-  // @ts-nocheck
-  const React = require('react');
-const { NavigationContainer } = require('@react-navigation/native');
-const { createStackNavigator } = require('@react-navigation/stack');
-const HomeScreen = require('../screens/HomeScreen');
+// @ts-nocheck
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import HomeScreen from '../screens/HomeScreen';
 
 const Stack = createStackNavigator();
 
@@ -50,13 +73,13 @@ function Navigation() {
     </NavigationContainer>
   );
 }
-module.exports = { Navigation };  
+export { Navigation };  
 `,
 
   'screens/HomeScreen.tsx': `
-  // @ts-nocheck
-  const React = require('react');
-const { View, Text, Button } = require('react-native');
+// @ts-nocheck
+import React from 'react';
+import { View, Text, Button } from 'react-native';
 
 function HomeScreen() {
   return (
@@ -65,37 +88,43 @@ function HomeScreen() {
     </View>
   );
 }
-module.exports = HomeScreen;  
+export default HomeScreen;  
 `,
+'models/RequestClass.ts': `
+export abstract class Request<T> {
+  constructor(protected endpoint: string, protected data?: unknown) {}
 
-  'services/api.ts': `
-  // @ts-nocheck
-  const axios = require('axios');
+  abstract send(): Promise<T>;
 
-const baseURL = process.env.ENVIRONMENT === 'production' ? process.env.API_URL_PROD : process.env.API_URL_DEV ?? 'http://localhost:3000/api';
-const token = process.env.API_TOKEN;
-
-const api = axios.create({
-  baseURL,
-  headers: {
-    'Content-Type': 'application/json',
-    Authorization: token ? 'Bearer ' + token : '',
-  },
-});
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    console.error('API Error:', error);
-    return Promise.reject(error);
+  protected async handleRequest(fetchFunction: () => Promise<T>): Promise<T> {
+    try {
+      return await fetchFunction();
+    } catch (error) {
+      console.error(\`Error in request to \${this.endpoint}:\`, error);
+      throw error;
+    }
   }
-);
-module.exports = { api };
+}
+`,
+'models/GetRequest.ts': `
+// @ts-nocheck
+import { api } from "../services/api";
+import { Request } from "./RequestClass";
+
+class GetRequest<T> extends Request<T> {
+  async send(): Promise<T> {
+    return this.handleRequest(async () => {
+      const response = await api.get<T>(this.endpoint);
+      return response.data;
+    });
+  }
+}
+export { GetRequest };
 `,
   'models/PostRequest.ts': `
 // @ts-nocheck
-const { api } = require("../services/api");
-const { Request } = require("./RequestClass");
+import { api } from "../services/api";
+import { Request } from "./RequestClass";
 
 class PostRequest<T> extends Request<T> {
   async send(): Promise<T> {
@@ -105,12 +134,12 @@ class PostRequest<T> extends Request<T> {
     });
   }
 }
-  module.exports = { PostRequest };
+export { PostRequest };
 `,
   'hooks/useRequest.tsx': `
 // @ts-nocheck
-const { useCallback, useState } = require('react');
-const { Request } = require("./RequestClass");
+import { useCallback, useState } from 'react';
+import { Request } from "./RequestClass";
 
 function useRequest(request) {
   const [loading, setLoading] = useState(false);
@@ -135,12 +164,12 @@ function useRequest(request) {
   return { send, loading, error };
 }
 
-module.exports = { useRequest };
+export { useRequest };
 `,
   'services/api.ts': `
 // @ts-nocheck
-const axios = require('axios');
-const Config = require('react-native-config');
+import axios from 'axios';
+import Config from 'react-native-config';
 
 const {
   API_URL_PROD, 
