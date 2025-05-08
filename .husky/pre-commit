@@ -1,11 +1,18 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
+#!/usr/bin/env bash
+# v10-ready Husky hook
+
+# Tu mensaje pro
 printf "\n\033[1;35m╔══════════════════════════════════╗\033[0m\n"
 printf "\033[1;35m║\033[0m  \033[1;36mI got your back, boss! 💼\033[0m       \033[1;35m║\033[0m\n"
 printf "\033[1;35m║\033[0m  \033[1;33mLet me clean up this code... 🧹\033[0m  \033[1;35m║\033[0m\n"
 printf "\033[1;35m╚══════════════════════════════════╝\033[0m\n\n"
 
-npx prettier --write "**/*.{js,jsx,ts,tsx,json,md}" --loglevel silent && \
-printf "\033[1;32m✓ Mission accomplished! Code polished. 🪄\033[0m\n" || \
+# Formateo con Prettier (versión robusta)
+files=$(git diff --cached --name-only --diff-filter=ACM "*.{js,jsx,ts,tsx,json,md}" | xargs)
+[ -z "$files" ] && exit 0
+
+npx prettier --ignore-unknown --write $files && 
+printf "\033[1;32m✓ Mission accomplished! Code polished. 🪄\033[0m\n" || 
 printf "\033[1;31m✗ Alert! Some files resisted formatting. 🚨\033[0m\n"
-git add .
+
+git add $files
